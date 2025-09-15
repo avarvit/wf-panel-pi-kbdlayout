@@ -49,11 +49,11 @@ meson compile -C builddir # or, equivalently, (cd builddir && ninja compile)
 
 To install:
 ```
-sudo meson install -C builddir @ (or, equivalently, (cd builddir && sudo ninja install)
+sudo meson install -C builddir # or, equivalently, (cd builddir && sudo ninja install)
 ```
 This will install three files:
 
--  /usr/lib/aarch64-linux-gnu/wf-panel-pi/libkbdlayout.so` the actual plugin
+-  `/usr/lib/aarch64-linux-gnu/wf-panel-pi/libkbdlayout.so` the actual plugin
 - `/usr/share/wf-panel-pi/metadata/kbdlayout.xml` XML configuration for the plugin
 - `/usr/lib/aarch64-linux-gnu/pkgconfig/wf-panel-pi-kbdlayout.pc` plugin pkgconfig info
 
