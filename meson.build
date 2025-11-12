@@ -44,7 +44,7 @@ giomm     = dependency('giomm-2.4',
 )
 wf_panel_pi = dependency(
     'wf-panel-pi',
-    version: '>=0.8.0'
+#    version: '>=0.8.0'
 )
 
 deps = [ gtkmm, xkbcommon, glibmm, giomm, wf_panel_pi ]

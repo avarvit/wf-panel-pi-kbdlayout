@@ -28,8 +28,20 @@ To build, you must first install the following dependencies:
 ```
 sudo apt install libglibmm-2.4-dev libgtkmm-3.0-dev libxkbcommon-dev wf-panel-pi-dev
 ```
+2. Clone and choose your distribution
 
-2. Configure meson
+Clone this repo locally by
+```
+git clone https://github.com/avarvit/wf-panel-pi-kbdlayout.git
+```
+
+The latest HEAD will compile on trixie; to compile on bookworm, you must
+first checkout the 'bookworm' tag:
+```
+git checkout bookworm
+```
+
+3. Configure meson
 
 To configure the build:
 ```
@@ -38,14 +50,13 @@ meson setup builddir --prefix=/usr --libdir=/usr/lib/<library-location>
 On a 32-bit system, `<library-location>` should be `arm-linux-gnueabihf`;
 On a 64-bit system, `<library-location>` should be `aarch64-linux-gnu`.
 
-3. Build
+4. Build
 
 Build using
 ```
 meson compile -C builddir # or, equivalently, (cd builddir && ninja compile)
 ```
-
-4. Install
+5. Install
 
 To install:
 ```
@@ -57,7 +68,7 @@ This will install three files:
 - `/usr/share/wf-panel-pi/metadata/kbdlayout.xml` XML configuration for the plugin
 - `/usr/lib/aarch64-linux-gnu/pkgconfig/wf-panel-pi-kbdlayout.pc` plugin pkgconfig info
 
-5. Uninstall
+6. Uninstall
 
 Uninstallation is just as simple:
 ```
@@ -65,7 +76,7 @@ Uninstallation is just as simple:
 ```
 
 ## Configuring wf-panel-pi
-To start using the plugin, edit your `$HOME/.config/wf-panel-pi.ini`. If this file
+To start using the plugin, edit your `$HOME/.config/wf-panel-pi/wf-panel-pi.ini`. If this file
 does not exist, do not worry, run `wf-panel-pi` once and it will get created. Then,
 edit the file and locate a line starting with `widgets_right=`, then change it to
 include kbdlayout as follows (you can place the kbdlayout wherever you please with
@@ -74,7 +85,9 @@ respect to other widgets). If no such line exists, feel free to add it.
 widgets_right=tray ejecter updater spacing2 bluetooth spacing2 netman spacing2 volumepulse spacing2 clock spacing2 kbdlayout spacing2 connect
 ```
 
-## Configuring the compositor
+## Configuring the compositor (work in progress)
+
+Note: the projects below have not yet been ported to trixie; the labwc library built for bookworm will work on trixie, too, but this is just provided as an interim workaround. Eventually, the projects will be ported (and this note will be removed from here)
 
 For Wayfire, a Wayfire plugin must be added that implements the "kbdd" functionality
 required by the `kbdlayout` widget. See https://github.com/avarvit/wayfire-kbdd-plugin
