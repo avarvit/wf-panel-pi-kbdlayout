@@ -26,7 +26,7 @@ below).
 
 To build, you must first install the following dependencies:
 ```
-sudo apt install libglibmm-2.4-dev libgtkmm-3.0-dev libxkbcommon-dev wf-panel-pi-dev
+sudo apt install libglibmm-2.4-dev libgtkmm-3.0-dev libxkbcommon-dev libglm-dev wf-panel-pi-dev
 ```
 2. Clone and choose your distribution
 
