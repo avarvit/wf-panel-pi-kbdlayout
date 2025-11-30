@@ -87,12 +87,16 @@ widgets_right=tray ejecter updater spacing2 bluetooth spacing2 netman spacing2 v
 
 ## Configuring the compositor (work in progress)
 
-Note: the projects below have not yet been ported to trixie; the labwc library built for bookworm will work on trixie, too, but this is just provided as an interim workaround. Eventually, the projects will be ported (and this note will be removed from here)
+Note: the wayfire plugin project below will only compile and run under
+Bookworm - it has not yet been ported to Trixie.
 
-For Wayfire, a Wayfire plugin must be added that implements the "kbdd" functionality
-required by the `kbdlayout` widget. See https://github.com/avarvit/wayfire-kbdd-plugin
-for more information and installation instructions.
+The labwc library project below has been ported to Trixie
 
-For Labwc, the functionality is provided by preloading a library that hooks a few
-wlroots calls. See https://github.com/avarvit/wlroots-kbdd or more information
-and installation instructions.
+For Wayfire, a Wayfire plugin must be added that implements the "kbdd"
+functionality required by the `kbdlayout` widget.
+See https://github.com/avarvit/wayfire-kbdd-plugin for more information
+and installation instructions (Bookworm only).
+
+For Labwc, the functionality is provided by preloading a library that hooks
+a few wlroots calls. See https://github.com/avarvit/wlroots-kbdd or more
+information and installation instructions (Trixie and Bookworm).
