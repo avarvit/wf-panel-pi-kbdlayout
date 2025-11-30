@@ -85,12 +85,13 @@ respect to other widgets). If no such line exists, feel free to add it.
 widgets_right=tray ejecter updater spacing2 bluetooth spacing2 netman spacing2 volumepulse spacing2 clock spacing2 kbdlayout spacing2 connect
 ```
 
-## Configuring the compositor (work in progress)
+## Configuring the compositor
 
-Note: the wayfire plugin project below will only compile and run under
-Bookworm - it has not yet been ported to Trixie.
+Note: the labwc library project below has been ported to Trixie
 
-The labwc library project below has been ported to Trixie
+The wayfire plugin project below will only compile and run under
+Bookworm - it has not yet been ported to Trixie. 
+
 
 For Wayfire, a Wayfire plugin must be added that implements the "kbdd"
 functionality required by the `kbdlayout` widget.
