@@ -1,3 +1,30 @@
+/*============================================================================
+Copyright (c) 2025 Angelos Varvitsiotis
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the copyright holder nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+============================================================================*/
+
 #ifndef WIDGETS_KBDLAYOUT_HPP
 #define WIDGETS_KBDLAYOUT_HPP
 
@@ -6,8 +33,14 @@
 #include <gtkmm/label.h>
 #include <giomm.h>
 
+extern "C" {
+#include "plugin.h"
+}
 
-class WayfireKbdLayout : public WayfireWidget
+#define PLUGIN_TITLE N_("Kbdlayout")
+#define PLOGUN_DESC N_("Keybaord language display and switching")
+
+class WidgetKbdLayout : public PanelWidget
 {
 
     // a helper subclass of Gtk::MenuItem to ease up things with menus
@@ -16,10 +49,10 @@ class WayfireKbdLayout : public WayfireWidget
 
         std::string shrt_name;
         std::string long_name;
-        WayfireKbdLayout *parent;
+        WidgetKbdLayout *parent;
 
       public:
-        MenuItem(WayfireKbdLayout *prnt, std::string shrtn, std::string longn, bool mnemonic = false) :
+        MenuItem(WidgetKbdLayout *prnt, std::string shrtn, std::string longn, bool mnemonic = false) :
               Gtk::MenuItem(shrtn + " (" + longn + ")", mnemonic)
         {
            this->parent = prnt;
@@ -30,7 +63,7 @@ class WayfireKbdLayout : public WayfireWidget
         void set_activate()
         {
             this->signal_activate().connect_notify(
-                sigc::mem_fun(this, &WayfireKbdLayout::MenuItem::on_clicked)
+                sigc::mem_fun(this, &WidgetKbdLayout::MenuItem::on_clicked)
             );
         }
 
@@ -47,7 +80,7 @@ class WayfireKbdLayout : public WayfireWidget
         void on_clicked()
         {
 #if 0
-            // serves for debugging
+            // debugging
             std::cerr << get_label()
                 << " clicked (short name=" << get_short_name()
                 << ", long name=" << get_long_name()
@@ -81,11 +114,15 @@ class WayfireKbdLayout : public WayfireWidget
     void on_button_press_event(GdkEventButton *event);
 #endif
 
+#if 0 // moved out
     // Options
     WfOption<std::string> bar_pos {"panel/position"};
     WfOption<std::string> font {"panel/kbdlayout_font"};
+#endif
 
+#if 0 // temporarily moved out
     void set_font();
+#endif
 
 #if 0 // moved to .cpp
     static constexpr conf_table_t conf_table[2] = {
@@ -103,15 +140,15 @@ class WayfireKbdLayout : public WayfireWidget
     struct wl_keyboard *keyboard;
 #endif
 
-    void init(Gtk::HBox *container) override;
+    void widget_init(Gtk::HBox *container) override;
     sigc::connection timeout;
-    void command(const char *cmd) override;
+    void widget_command(const char *cmd) override;
     void update_label(const char *layout);
     static const char *display_name (void) { return N_("KbdLayout"); };
 #if 0 // moved to .cpp
     static const conf_table_t *config_params (void) { return conf_table; };
 #endif
-    ~WayfireKbdLayout();
+    virtual ~WidgetKbdLayout();
 
 };
 

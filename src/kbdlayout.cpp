@@ -5,12 +5,12 @@
 #include <xkbcommon/xkbcommon.h>
 
 extern "C" {
-    WayfireWidget *create() { return new WayfireKbdLayout; }
-    void destroy (WayfireWidget *w) { delete w;}
+    PanelWidget *create() { return new WidgetKbdLayout; }
+    void destroy (PanelWidget *w) { delete w;}
 
     static constexpr conf_table_t conf_table[2] = {
-        {CONF_TYPE_STRING, "font",       N_("Display font"),	NULL},
-        {CONF_TYPE_NONE,   NULL,         NULL, 			NULL}
+        {CONF_TYPE_FONT,   "font",       N_("Kbdlayout font"),	NULL,    "default"},
+        {CONF_TYPE_NONE,   NULL,         NULL, 			NULL,    NULL}
     };
     const conf_table_t *config_params (void) { return conf_table; };
     const char *display_name (void) { return N_("KbdLayout"); };
@@ -140,7 +140,7 @@ static struct wl_keyboard_listener keyboard_listener = {
 
 static void seat_handle_capabilities(void *data, struct wl_seat *wl_seat,
                 uint32_t caps) {
-    WayfireKbdLayout *me = (WayfireKbdLayout *) data;
+    WidgetKbdLayout *me = (WidgetKbdLayout *) data;
 
     fprintf(stderr, "seat capability (keyboard): %d\n", (enum wl_seat_capability) caps & WL_SEAT_CAPABILITY_KEYBOARD);
     if (((enum wl_seat_capability) caps & WL_SEAT_CAPABILITY_KEYBOARD)) {
@@ -158,7 +158,7 @@ static const struct wl_seat_listener seat_listener = {
 static void registry_add_object(void *data, struct wl_registry *registry,
     uint32_t name, const char *interface, uint32_t version)
 {
-    WayfireKbdLayout *me = (WayfireKbdLayout *) data;
+    WidgetKbdLayout *me = (WidgetKbdLayout *) data;
     fprintf(stderr, "Interface: %s\n", interface);
     if (strcmp(interface, wl_seat_interface.name) == 0)
     {
@@ -190,14 +190,14 @@ static struct wl_registry_listener registry_listener =
 // resets our menu to either its initial state (a message informing that the
 // switching functionality is not available) or to a list of layouts
 
-void WayfireKbdLayout::reset_menu(const char *layout_list) {
+void WidgetKbdLayout::reset_menu(const char *layout_list) {
     menu.popdown();
     button->unset_popup();
 
     for (auto widgp : menu.get_children()) {
         menu.remove(*widgp);
         // see note below about explicit destructor invocation
-        auto mi = dynamic_cast<WayfireKbdLayout::MenuItem *>(widgp);
+        auto mi = dynamic_cast<WidgetKbdLayout::MenuItem *>(widgp);
         if (mi) {
             mi->~MenuItem();
             // HERE: make it a method and include it in destructor???
@@ -223,8 +223,8 @@ void WayfireKbdLayout::reset_menu(const char *layout_list) {
             std::string long_name = get_long_name(short_name);
             if (long_name != "(not found)") {
                 // see above comment about new()
-                WayfireKbdLayout::MenuItem *mi =
-                    new WayfireKbdLayout::MenuItem(this, short_name, long_name);
+                WidgetKbdLayout::MenuItem *mi =
+                    new WidgetKbdLayout::MenuItem(this, short_name, long_name);
                 menu.append(*mi);
                 mi->set_activate();
             }
@@ -239,7 +239,7 @@ void WayfireKbdLayout::reset_menu(const char *layout_list) {
 
 // our constructor; nothing fancy here, just initialize things around
 
-void WayfireKbdLayout::init(Gtk::HBox *container)
+void WidgetKbdLayout::widget_init(Gtk::HBox *container)
 {
 
 #if 0
@@ -266,7 +266,7 @@ void WayfireKbdLayout::init(Gtk::HBox *container)
     button->show();
 #if 0
     button->signal_button_press_event().connect_notify(
-         sigc::mem_fun(this, &WayfireKbdLayout::on_button_press_event));
+         sigc::mem_fun(this, &WidgetKbdLayout::on_button_press_event));
 #endif
 
     // menu
@@ -285,13 +285,15 @@ void WayfireKbdLayout::init(Gtk::HBox *container)
     // dbus
     dbus_initialize();
 
+#if 0
     // initially set font
     set_font();
     font.set_callback([=] () { set_font(); });
+#endif
 }
 
 #if 0
-void WayfireKbdLayout::on_button_press_event(GdkEventButton *event)
+void WidgetKbdLayout::on_button_press_event(GdkEventButton *event)
 {
 }
 #endif
@@ -302,7 +304,7 @@ void WayfireKbdLayout::on_button_press_event(GdkEventButton *event)
 // and tooltips), by creating a kbd_keymap and getting the description
 // from there and by remembering old mappings
 
-std::string WayfireKbdLayout::get_long_name(std::string short_name)
+std::string WidgetKbdLayout::get_long_name(std::string short_name)
 {
     if (long_names.find(short_name) != long_names.end()) {
         return long_names.at(short_name);
@@ -345,7 +347,7 @@ std::string WayfireKbdLayout::get_long_name(std::string short_name)
 // (d) a "~" resulting in the menu being reset as above and "??" being shown
 //     (this is sent if kbdd is dynamically unloaded during execution)
 
-void WayfireKbdLayout::command(const char *cmd) {
+void WidgetKbdLayout::widget_command(const char *cmd) {
     std::string cmdstr = cmd;
     // upon startup, kbdd sends all keyboard layouts it finds in wayfire.ini, so we
     // can build a layout switch menu 
@@ -369,13 +371,13 @@ void WayfireKbdLayout::command(const char *cmd) {
 // updates our label; if the label is set to "??", a switch off/on sequence
 // of commands is sent to kbdd
 
-void WayfireKbdLayout::update_label(const char *layout) {
+void WidgetKbdLayout::update_label(const char *layout) {
     std::string text = layout;
 
     if (label.get_text() != text) {
         if (label.get_text() == "??") {
             Glib::signal_timeout().connect_once(
-                sigc::mem_fun(this, &WayfireKbdLayout::dbus_call_enable_off_on_pulse),
+                sigc::mem_fun(this, &WidgetKbdLayout::dbus_call_enable_off_on_pulse),
                 300);
         }
         label.set_text(text);
@@ -384,7 +386,8 @@ void WayfireKbdLayout::update_label(const char *layout) {
 }
 
 
-void WayfireKbdLayout::set_font()
+#if 0
+void WidgetKbdLayout::set_font()
 {
     if ((std::string)font == "default")
     {
@@ -394,6 +397,7 @@ void WayfireKbdLayout::set_font()
         label.override_font(Pango::FontDescription((std::string)font));
     }
 }
+#endif
 
 
 // kbdd DBus introspection XML
@@ -446,7 +450,7 @@ static const auto introspection_data = Gio::DBus::NodeInfo::create_for_xml(
 // method call invocations are used, we do not need a Glib main loop
 // other than for initializing DBus, which we do here
 
-void WayfireKbdLayout::dbus_initialize()
+void WidgetKbdLayout::dbus_initialize()
 {
     // it appears this is not needed anymore
     // Gio::init();
@@ -476,7 +480,7 @@ void WayfireKbdLayout::dbus_initialize()
 // sends to kbdd an "enable" command over DBus, passing a zero (false) or a
 // non-zero (true) parameter
 
-void WayfireKbdLayout::dbus_call_enable(bool flag)
+void WidgetKbdLayout::dbus_call_enable(bool flag)
 {
     if (!connection) {
         std::cerr << "dbus_call_enable: no DBus connection!" << std::endl;
@@ -495,7 +499,7 @@ void WayfireKbdLayout::dbus_call_enable(bool flag)
 
 // pulses the enable status of kbdd off and then back on (during (re-)initialization)
 
-void WayfireKbdLayout::dbus_call_enable_off_on_pulse() {
+void WidgetKbdLayout::dbus_call_enable_off_on_pulse() {
     dbus_call_enable(false);
     Glib::signal_timeout().connect_once(
         [=]() {
@@ -509,7 +513,7 @@ void WayfireKbdLayout::dbus_call_enable_off_on_pulse() {
 // sends a "switch" command to kbdd over DBus, causing kbdd to switch the keyboard
 // layout of the last non-shell view to the selected one
 
-void WayfireKbdLayout::dbus_call_switch(std::string layout)
+void WidgetKbdLayout::dbus_call_switch(std::string layout)
 {
     if (!connection) {
         std::cerr << "dbus_call_switch: no DBus connection!" << std::endl;
@@ -528,12 +532,12 @@ void WayfireKbdLayout::dbus_call_switch(std::string layout)
 
 // performs termination actions (currently, just disabling kbdd's DBus operations)
 
-void WayfireKbdLayout::dbus_terminate()
+void WidgetKbdLayout::dbus_terminate()
 {
     dbus_call_enable(false);
 }
 
-WayfireKbdLayout::~WayfireKbdLayout()
+WidgetKbdLayout::~WidgetKbdLayout()
 {
     // in case wf-panel-pi receives an interrupt, these get never executed; a caveat
     // is therefore that in such a case, kbdd remains enabled and keeps sending
