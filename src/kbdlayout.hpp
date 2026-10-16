@@ -109,15 +109,14 @@ class WidgetKbdLayout : public PanelWidget
     void on_button_press_event(GdkEventButton *event);
 #endif
 
-#if 0 // moved out
+#if 0 // moved out, font is now a char * so conf_table can point to it
     // Options
     WfOption<std::string> bar_pos {"panel/position"};
     WfOption<std::string> font {"panel/kbdlayout_font"};
 #endif
 
-#if 0 // temporarily moved out
+    char *font;
     void set_font();
-#endif
 
 #if 0 // moved to .cpp
     static constexpr conf_table_t conf_table[2] = {
@@ -136,6 +135,7 @@ class WidgetKbdLayout : public PanelWidget
 #endif
 
     void widget_init(Gtk::HBox *container) override;
+    void widget_config_reload(void) override;
     sigc::connection timeout;
     void widget_command(const char *cmd) override;
     void update_label(const char *layout);

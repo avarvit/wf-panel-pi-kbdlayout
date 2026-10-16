@@ -31,7 +31,7 @@ extern "C" {
     PanelWidget *create() { return new WidgetKbdLayout; }
     void destroy (PanelWidget *w) { delete w;}
 
-    static constexpr conf_table_t conf_table[2] = {
+    static conf_table_t conf_table[2] = {
         {CONF_TYPE_FONT,   "font",       N_("Kbdlayout font"),	NULL,    "default"},
         {CONF_TYPE_NONE,   NULL,         NULL, 			NULL,    NULL}
     };
@@ -308,11 +308,26 @@ void WidgetKbdLayout::widget_init(Gtk::HBox *container)
     // dbus
     dbus_initialize();
 
-#if 0
+    conf_table[0].value = (void **) &font;
+    std::cerr << "conf_table[0].value is now ";
+    std::cerr << conf_table[0].value;
+    load_configuration_data (PLUGIN_NAME, conf_table);
+
     // initially set font
     set_font();
+#if 0
     font.set_callback([=] () { set_font(); });
 #endif
+}
+
+// there is no WfOption anymore with a callback; the widget_config_reload
+// metohd is the way we learn about config reloads
+
+void WidgetKbdLayout::widget_config_reload()
+{
+    if (load_configuration_data (PLUGIN_NAME, conf_table)) {
+       set_font();
+    }
 }
 
 #if 0
@@ -409,7 +424,6 @@ void WidgetKbdLayout::update_label(const char *layout) {
 }
 
 
-#if 0
 void WidgetKbdLayout::set_font()
 {
     if ((std::string)font == "default")
@@ -420,7 +434,6 @@ void WidgetKbdLayout::set_font()
         label.override_font(Pango::FontDescription((std::string)font));
     }
 }
-#endif
 
 
 // kbdd DBus introspection XML
