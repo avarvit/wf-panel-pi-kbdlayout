@@ -1,6 +1,6 @@
 project(
     'wf-panel-pi-kbdlayout',
-#    'c',
+    'c',
     'cpp',
     version: '0.9.0',
     license: 'MIT',

@@ -2,6 +2,7 @@ name = 'kbdlayout'
 
 sources = files(
   'kbdlayout.cpp',
+  'getcompositor.c',
 )
 
 

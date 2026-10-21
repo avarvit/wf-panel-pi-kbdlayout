@@ -231,6 +231,25 @@ void WidgetKbdLayout::reset_menu(const char *layout_list) {
         // if we use smart pointers, MenuItem(s) get destructed after
         // init() method terminates and menu will end up being empty;
         // thus we use new() and destruct explicitly (see above)
+        // HERE
+
+        Gtk::MenuItem *mi;
+        char *compositor = get_compositor();
+        if (compositor == NULL) {
+            mi = new Gtk::MenuItem(msg_no_dbus_gen);
+        }
+        else if (!strcmp(compositor, "labwc")) {
+            mi = new Gtk::MenuItem(msg_no_dbus_labwc);
+        }
+        else if (!strcmp(compositor, "wayfire")) {
+            mi = new Gtk::MenuItem(msg_no_dbus_wayfire);
+        }
+        else {
+            mi = new Gtk::MenuItem(msg_no_dbus_gen);
+        }
+        free(compositor);
+
+#if 0
         Gtk::MenuItem *mi = new Gtk::MenuItem(
             "The  KbdLayout  applet  only displays the  current layout\n"
             "and cannot  be used  to switch keyboard layouts. Please\n"
@@ -238,6 +257,7 @@ void WidgetKbdLayout::reset_menu(const char *layout_list) {
             "If you are only seeing  \"??\"  here, you must add \"kbdd\" to\n"
             "your $HOME/.config/wayfire.ini in the \"plugins = ...\" line."
             );
+#endif
         menu.append(*mi);
     }
     else {

@@ -30,10 +30,11 @@ SOFTWARE.
 
 extern "C" {
 #include "plugin.h"
+#include "getcompositor.h"
 }
 
 #define PLUGIN_TITLE N_("Kbdlayout")
-#define PLOGUN_DESC N_("Keybaord language display and switching")
+#define PLUGIN_DESC N_("Keybaord language display and switching")
 
 class WidgetKbdLayout : public PanelWidget
 {
@@ -119,7 +120,7 @@ class WidgetKbdLayout : public PanelWidget
     void set_font();
 
 #if 0 // moved to .cpp
-    static constexpr conf_table_t conf_table[2] = {
+    static conf_table_t conf_table[2] = {
         {CONF_STRING,   "font",     N_("Display font")},
         {CONF_NONE,     NULL,       NULL}
     };
@@ -145,6 +146,37 @@ class WidgetKbdLayout : public PanelWidget
 #endif
     virtual ~WidgetKbdLayout();
 
+    constexpr static const char *msg_no_dbus_gen = R"(
+The Kbdlaoyt widget  displays the current keyboard layout and
+can also instruct the compositor to switch among layouts.  It
+does this based on DBus messages. If you are only seeing "??"
+here,  it's because your compositor is not properly set up to
+send DBus messages. Check
+    https://github.com/avarvit/wf-panel-pi-kbdlayout
+for instructions on how to configure your compositor.
+    )";
+
+    constexpr static const char *msg_no_dbus_labwc = R"(
+In order for kbdlayout to display and change keyboard layouts
+under labwc, you must use the lwroots preload library.  Check
+    https://github.com/avarvit/wlroots-kbdd
+for further information.
+    )";
+
+    constexpr static const char *msg_no_dbus_wayfire = R"(
+In order for kbdlayout to display and change keyboard layouts
+under wayfire, you must enable the wayfire kbdd plugin. Check
+    https://github.com/avarvit/wayfire-kbdd-plugin
+for further information.
+    )";
+
+#if 0
+            "The  KbdLayout  applet  only displays the  current layout\n"
+            "and cannot  be used  to switch keyboard layouts. Please\n"
+            "type your keyboard toggle combination instead.\n\n"
+            "If you are only seeing  \"??\"  here, you must add \"kbdd\" to\n"
+            "your $HOME/.config/wayfire.ini in the \"plugins = ...\" line."
+#endif
 };
 
 #endif /* end of include guard: WIDGETS_KBDLAYOUT_HPP */
